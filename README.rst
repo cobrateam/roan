@@ -14,9 +14,8 @@ Suppose you have the following purge mapping:
 
     location ~ /purge(/.*) {
         allow 127.0.0.1;
-        allow 74.207.234.182;
         deny all;
-        proxy_cache_purge fscom "$scheme://$host$1";
+        proxy_cache_purge roan "$scheme://$host$1";
     }
 
 Now suppose you have the following `Django <http://djangoproject.com>`_ model:
