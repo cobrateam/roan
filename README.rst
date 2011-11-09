@@ -10,6 +10,8 @@ Since Roan is based on a personal needing, it's based on nginx's `proxy_cache <h
 
 Suppose you have the following purge mapping:
 
+::
+
     location ~ /purge(/.*) {
         allow 127.0.0.1;
         allow 74.207.234.182;
@@ -18,6 +20,8 @@ Suppose you have the following purge mapping:
     }
 
 Now suppose you have the following `Django <http://djangoproject.com>`_ model:
+
+::
 
     class Post(models.Model):
         title = models.CharField(max_length=100)
