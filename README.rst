@@ -6,7 +6,7 @@ Roan is a per-model url purging Django app. It connects to model signals and pur
 nginx proxy_cache support
 =========================
 
-Since Roan is based on a personal needing, it's based on nginx's `proxy_cache <http://wiki.nginx.org/HttpProxyModule#proxy_cache>`_.
+Since Roan is based on a personal need, it's based on nginx's `proxy_cache <http://wiki.nginx.org/HttpProxyModule#proxy_cache>`_.
 
 Suppose you have the following purge mapping:
 
