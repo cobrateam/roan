@@ -11,4 +11,5 @@ DATABASES = {
 
 INSTALLED_APPS = (
     'roan',
+    'polls',
 )
