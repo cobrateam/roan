@@ -1,7 +1,5 @@
 import setuptools
 
-import roan
-
 README = ""
 
 with open("README.rst") as f:
@@ -10,7 +8,7 @@ with open("README.rst") as f:
 
 setuptools.setup(
     name='roan',
-    version=roan.__version__,
+    version='0.0.1',
     description='Django per-model cache purging',
     long_description=README,
     author='CobraTeam',
