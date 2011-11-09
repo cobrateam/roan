@@ -5,4 +5,4 @@ clean:
 	@git clean -dfX
 
 test: clean
-	@nostests --with-django --django-sqlite --django-settings=settings_test --with-coverage --cover-packages=roan --cover-erase
+	@nosetests --with-django --django-settings=settings_test --with-coverage --cover-package=roan --cover-erase
