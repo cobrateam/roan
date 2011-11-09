@@ -1,0 +1,3 @@
+include *.rst
+exclude settings_test.py
+prune roan/tests
