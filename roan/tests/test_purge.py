@@ -14,7 +14,8 @@ from roan.tests import mocks
 class PurgeTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.bkp_receivers = signals.post_save.receivers
+        self.bkp_receivers_save = signals.post_save.receivers
+        self.bkp_receivers_delete = signals.post_delete.receivers
         signals.post_save.receivers = []
 
         self.old_purge_url = getattr(settings, 'ROAN_PURGE_URL', None)
@@ -22,7 +23,8 @@ class PurgeTestCase(unittest.TestCase):
             del settings.ROAN_PURGE_URL
 
     def tearDown(self):
-        signals.post_save.receivers = self.bkp_receivers
+        signals.post_save.receivers = self.bkp_receivers_save
+        signals.post_delete.receivers = self.bkp_receivers_delete
 
         if self.old_purge_url:
             settings.ROAN_PURGE_URL = self.old_purge_url
@@ -53,12 +55,12 @@ class PurgeTestCase(unittest.TestCase):
 
     def test_purge_should_connect_to_save_signal_of_a_model_with_unique_dispatch_uid(self):
         roan.purge("/").on_save(models.Poll)
-        expected_uid = "purge_/_for_%s" % models.Poll._meta.verbose_name
+        expected_uid = "purge_/_on_save_%s" % models.Poll._meta.verbose_name
         uuids = [r[0][0] for r in signals.post_save.receivers]
         self.assertIn(expected_uid, uuids)
 
     def test_purge_should_connect_to_save_signal_without_a_weak_reference(self):
-        uid = "purge_/_for_%s" % models.Poll._meta.verbose_name
+        uid = "purge_/_on_save_%s" % models.Poll._meta.verbose_name
         roan.purge("/").on_save(models.Poll)
         f = [r[1] for r in signals.post_save.receivers if r[0][0] == uid][0]
         self.assertNotIsInstance(f, weakref.ref)
@@ -70,4 +72,26 @@ class PurgeTestCase(unittest.TestCase):
         p.on_save(models.Poll)
 
         models.Poll.objects.create(title=u'Do you think Roan works well?')
+        self.assertTrue(p.requests.done)
+
+    def test_purge_should_connect_to_delete_signal_of_a_model_with_unique_dispatch_uid(self):
+        roan.purge("/").on_delete(models.Poll)
+        expected_uid = "purge_/_on_delete_%s" % models.Poll._meta.verbose_name
+        uuids = [r[0][0] for r in signals.post_delete.receivers]
+        self.assertIn(expected_uid, uuids)
+
+    def test_purge_should_to_delete_sginal_without_a_weak_reference(self):
+        uid = "purge_/_on_delete_%s" % models.Poll._meta.verbose_name
+        roan.purge("/").on_delete(models.Poll)
+        f = [r[1] for r in signals.post_delete.receivers if r[0][0] == uid][0]
+        self.assertNotIsInstance(f, weakref.ref)
+
+    def test_when_the_model_is_deleted_the_url_should_be_purged(self):
+        purge_url = "http://localhost/purge/polls"
+        p = roan.purge("/polls")
+        p.requests = mocks.RequestsMock(200, purge_url)
+        p.on_delete(models.Poll)
+
+        poll = models.Poll.objects.create(title=u'Do you think Roan works well?')
+        poll.delete()
         self.assertTrue(p.requests.done)

@@ -17,4 +17,11 @@ class purge(object):
             purge_url = self.purge_url + self.url
             self.requests.get(purge_url)
 
-        signals.post_save.connect(purger, sender=model, weak=False, dispatch_uid='purge_%s_for_%s' % (self.url, model._meta.verbose_name))
+        signals.post_save.connect(purger, sender=model, weak=False, dispatch_uid='purge_%s_on_save_%s' % (self.url, model._meta.verbose_name))
+
+    def on_delete(self, model):
+        def purger(sender, **kw):
+            purge_url = self.purge_url + self.url
+            self.requests.get(purge_url)
+
+        signals.post_delete.connect(purger, sender=model, weak=False, dispatch_uid='purge_%s_on_delete_%s' % (self.url, model._meta.verbose_name))
