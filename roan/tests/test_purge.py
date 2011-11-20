@@ -95,3 +95,26 @@ class PurgeTestCase(unittest.TestCase):
         poll = models.Poll.objects.create(title=u'Do you think Roan works well?')
         poll.delete()
         self.assertTrue(p.requests.done)
+
+    def test_should_be_able_to_purge_an_url_on_save_a_model_instance(self):
+        poll, created = models.Poll.objects.get_or_create(title=u'Do you think Roan should work?')
+
+        purge_url = "http://localhost/purge/polls/%d" % poll.id
+        p = roan.purge("/polls/%d" % poll.id)
+        p.requests = mocks.RequestsMock(200, purge_url)
+        p.on_save(poll)
+
+        poll.title = u'Do you think Roan works?'
+        poll.save()
+        self.assertTrue(p.requests.done)
+
+    def test_should_not_purge_on_saving_an_object_that_was_not_connected_to_the_url(self):
+        poll, created = models.Poll.objects.get_or_create(title=u'Do you think Roan should work?')
+
+        purge_url = "http://localhost/purge/polls/%d" % poll.id
+        p = roan.purge("/polls/%d" % poll.id)
+        p.requests = mocks.RequestsMock(200, purge_url)
+        p.on_save(poll)
+
+        models.Poll.objects.create(title=u'What is your favorite car?')
+        self.assertFalse(p.requests.done)
