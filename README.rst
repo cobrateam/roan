@@ -70,3 +70,32 @@ Here is the code for the example above, of purging the ``/posts`` URL whenever a
 
     purge("/posts").on_save(Post)
     purge("/posts").on_delete(Post)
+
+Development
+-----------
+
+* Source hosted at `GitHub <http://github.com/cobrateam/roan>`_
+* Report issues on `GitHub Issues <http://github.com/cobrateam/roan/issues>`_
+
+Pull requests are very welcome! Make sure your patches are well tested.
+
+setting up the development environment
+++++++++++++++++++++++++++++++++++++++
+
+To setup the development environment, just run:
+
+::
+
+    $ make bootstrap
+
+This command will install all the development dependencies. It assumes you're using `virtualenv <http://pypi.python.org/pypi/virtualenv>`_ and don't
+use ``sudo`` to install the dependencies. If you want to use the Python of your system, use ``sudo`` to run the ``make bootstrap`` command.
+
+running the test suite
+++++++++++++++++++++++
+
+``make`` is also used to run the tests of the application:
+
+::
+
+    $ make test
